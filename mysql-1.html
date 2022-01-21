@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<!-- saved from url=(0185)https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0110EN-SkillsNetwork/labs/Lab%20-%20Getting%20started%20with%20MySQL%20command%20line/instructional-labs.md.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./mysql-1_files/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="./mysql-1_files/default.min.css">
+  <style type="text/css">/* this file is used for labs on cognitiveclass.ai that were written in markdown */
+
+/* applies to images, i.e. "![]()" in markdown */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* add padding and margins */
+body {
+  padding: 10px;
+  margin: 10px;
+}
+
+/* applies to tables, i.e. "|--|--|" in markdown */
+table td,
+table th {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+/* applies to using quotes, i.e. ">" in markdown */
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 1em 10px 0.1em 10px;
+  quotes: '\201C''\201D''\2018''\2019';
+}
+
+/* the headers need some spacing */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 500;
+  padding-top: 20px;
+}
+
+/* Add padding between nested list item */
+ul > li > ul {
+  padding-bottom: 1rem;
+}
+
+.code-badge-language {
+  display: none;
+}
+.code-badge-copy-icon {
+  background: url('data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSIgZGF0YS1wcmVmaXg9ImZhciIgZGF0YS1pY29uPSJjb3B5IiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtY29weSBmYS13LTE0IiByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDQ0OCA1MTIiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQzMy45NDEgNjUuOTQxbC01MS44ODItNTEuODgyQTQ4IDQ4IDAgMCAwIDM0OC4xMTggMEgxNzZjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2NDhINDhjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2MzIwYzAgMjYuNTEgMjEuNDkgNDggNDggNDhoMjI0YzI2LjUxIDAgNDgtMjEuNDkgNDgtNDh2LTQ4aDgwYzI2LjUxIDAgNDgtMjEuNDkgNDgtNDhWOTkuODgyYTQ4IDQ4IDAgMCAwLTE0LjA1OS0zMy45NDF6TTI2NiA0NjRINTRhNiA2IDAgMCAxLTYtNlYxNTBhNiA2IDAgMCAxIDYtNmg3NHYyMjRjMCAyNi41MSAyMS40OSA0OCA0OCA0OGg5NnY0MmE2IDYgMCAwIDEtNiA2em0xMjgtOTZIMTgyYTYgNiAwIDAgMS02LTZWNTRhNiA2IDAgMCAxIDYtNmgxMDZ2ODhjMCAxMy4yNTUgMTAuNzQ1IDI0IDI0IDI0aDg4djIwMmE2IDYgMCAwIDEtNiA2em02LTI1NmgtNjRWNDhoOS42MzJjMS41OTEgMCAzLjExNy42MzIgNC4yNDMgMS43NTdsNDguMzY4IDQ4LjM2OGE2IDYgMCAwIDEgMS43NTcgNC4yNDNWMTEyeiI+PC9wYXRoPjwvc3ZnPg==');
+  background-size: 100% 100%;
+}
+
+.code-badge {
+  bottom: 0 !important;
+  top: unset !important;
+  background: unset !important;
+}
+
+.code-badge > .code-badge-check-icon {
+  background: green;
+}
+.code-badge-check-icon {
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0 7px;
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGFyaWEtaGlkZGVuPSJ0cnVlIiBmb2N1c2FibGU9ImZhbHNlIiBkYXRhLXByZWZpeD0iZmFzIiBkYXRhLWljb249ImNoZWNrIiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtY2hlY2sgZmEtdy0xNiIgcm9sZT0iaW1nIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgc3R5bGU9IiYjMTA7ICAgIGNvbG9yOiAjMmFmZjMyOyYjMTA7Ij48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xNzMuODk4IDQzOS40MDRsLTE2Ni40LTE2Ni40Yy05Ljk5Ny05Ljk5Ny05Ljk5Ny0yNi4yMDYgMC0zNi4yMDRsMzYuMjAzLTM2LjIwNGM5Ljk5Ny05Ljk5OCAyNi4yMDctOS45OTggMzYuMjA0IDBMMTkyIDMxMi42OSA0MzIuMDk1IDcyLjU5NmM5Ljk5Ny05Ljk5NyAyNi4yMDctOS45OTcgMzYuMjA0IDBsMzYuMjAzIDM2LjIwNGM5Ljk5NyA5Ljk5NyA5Ljk5NyAyNi4yMDYgMCAzNi4yMDRsLTI5NC40IDI5NC40MDFjLTkuOTk4IDkuOTk3LTI2LjIwNyA5Ljk5Ny0zNi4yMDQtLjAwMXoiLz48L3N2Zz4=');
+  background-size: 100% 100%;
+}
+</style></head>
+  <body>
+    <img src="./mysql-1_files/IDSNlogo.png" width="200" height="200">
+    <h1>Hands-on Lab : Getting started with MySQL command line</h1>
+    <p><strong>Estimated time needed:</strong> 20 minutes</p>
+    <p>In this lab, you will use the MySQL command line interface (CLI) to create a database and to restore the structure and contents of tables. Then you will learn how to explore and query tables. Finally, you will learn how to dump/backup tables from database.</p>
+    <h1></h1>
+    <h2>Software Used in this Lab</h2>
+    <p>In this lab, you will use <a href="https://www.mysql.com/?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDB0110ENSkillsNetwork24601058-2021-01-01">MySQL</a>. MySQL is a Relational Database Management System (RDBMS) designed to efficiently store, manipulate, and retrieve data.</p>
+    <img src="./mysql-1_files/mysql.png" width="100" height="100">
+    <p></p>
+    <p>To complete this lab you will utilize the MySQL relational database service available as part of the IBM Skills Network Labs (SN Labs) Cloud IDE. SN Labs is a virtual lab environment used in this course.</p>
+    <h1></h1>
+    <h2>Database Used in this Lab</h2>
+    <p>The Sakila database used in this lab comes from the following source: <a href="https://dev.mysql.com/doc/sakila/en/?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDB0110ENSkillsNetwork24601058-2021-01-01" target="_blank" rel="external">https://dev.mysql.com/doc/sakila/en/</a> under <a href="https://opensource.org/licenses/bsd-license.php?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDB0110ENSkillsNetwork24601058-2021-01-01" target="_blank" rel="external">New BSD license</a> [Copyright 2021 - Oracle Corporation].</p>
+    <p>You will use a modified version of the database for the lab, so to follow the lab instructions successfully please use the database provided with the lab, rather than the database from the original source.</p>
+    <p>The following entity relationship diagram (ERD) shows the schema of the Sakila database:</p>
+    <img src="./mysql-1_files/sakila_ERD.jpg" width="500" height="592">
+    <h1></h1>
+    <h2>Objectives</h2>
+    <p>After completing this lab, you will be able to use the MySQL command line to:</p>
+    <ul>
+      <li>Create a database.</li>
+      <li>Restore the structure and data of a table.</li>
+      <li>Explore and query tables.</li>
+      <li>Dump/backup tables from a database.</li>
+    </ul>
+    <h1></h1>
+    <h2>Exercise</h2>
+    <p>In this exercise through different tasks, you will use the MySQL command line interface (CLI) to create a database and to restore the structure and contents of tables. Then you will learn how to explore and query tables. Finally, you will learn how to dump/backup tables from database.</p>
+    <h1></h1>
+    <h3>Task A: Create a database</h3>
+    <ol>
+      <li>
+        <p>Go to <strong>Terminal &gt; New Terminal</strong> to open a terminal from the side by side launched Cloud IDE.</p>
+        <p>
+          <img src="./mysql-1_files/A.1.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="2">
+      <li>
+        <p>Copy the command below by clicking on the little copy button on the bottom right of the codeblock and then paste it into the terminal using <strong>Ctrl + V</strong> (Mac: ⌘ + V) to fetch the <a href="https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0110EN-SkillsNetwork/datasets/sakila/sakila_mysql_dump.sql" target="_blank" rel="external">sakila_mysql_dump.sql</a> file to the Cloud IDE.</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">awk</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-awk">wget https:<span class="hljs-regexp">//</span>cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud<span class="hljs-regexp">/IBM-DB0110EN-SkillsNetwork/</span>datasets<span class="hljs-regexp">/sakila/</span>sakila_mysql_dump.sql
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./mysql-1_files/A.2.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="3">
+      <li>
+        <p>Start the MySQL service session in the Cloud IDE using the command below in the terminal:</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">ebnf</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-ebnf"><span class="hljs-attribute">start_mysql</span>
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./mysql-1_files/A.3.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="4">
+      <li>
+        <p>Initiate the mysql command prompt session within MySQL service session using the command below in the terminal:</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">routeros</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-routeros">mysql <span class="hljs-attribute">--host</span>=127.0.0.1 <span class="hljs-attribute">--port</span>=3306 <span class="hljs-attribute">--user</span>=root --password
+</code></pre>
+        <p></p>
+        <p>When prompted, enter the password that was displayed when MySQL started up, as shown in the screenshot below.</p>
+        <p>
+          <img src="./mysql-1_files/A.4.png" alt="image">
+        </p>
+        <p>Please note, you won't be able to see your password when typing it in. Not to worry, this is expected!</p>
+      </li>
+    </ol><br>
+    <ol start="5">
+      <li>Enter your MySQL service session password from the highlighted location of the terminal shown in the image above. Note down your MySQL service session password because you may need to use it later in the lab.</li>
+    </ol><br>
+    <ol start="6">
+      <li>
+        <p>Create a new database <strong>sakila</strong> using the command below in the terminal and proceed to Task B:</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">n1ql</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-n1ql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">database</span> sakila;
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./mysql-1_files/A.6.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <h1></h1>
+    <h3>Task B: Restore the structure and data of a table</h3>
+    <ol>
+      <li>
+        <p>To use the newly created empty sakila database, use the command below in the terminal:</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">abnf</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-abnf">use sakila<span class="hljs-comment">;</span>
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./mysql-1_files/B.1.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="2">
+      <li>
+        <p>Restore the sakila mysql dump file (containing the sakila database table definitions and data) to the newly created empty sakila database. A dump file is a text file that contains the data from a database in the form of SQL statements. This file can be imported using the command line with the following command:</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">abnf</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-abnf">source sakila_mysql_dump.sql<span class="hljs-comment">;</span>
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./mysql-1_files/B.2.png" alt="image">
+        </p>
+        <blockquote>
+          <p><strong>Note:</strong> You can use the <strong>source</strong> command to restore the database dump file within the mysql command prompt. To restore the database dump file outside of the mysql command prompt, you can use the <code>mysql --host=127.0.0.1 --port=3306 --user=root --password sakila &lt; sakila_mysql_dump.sql</code> command after quitting the mysql command prompt session with command <code>\q</code>.</p>
+        </blockquote>
+      </li>
+    </ol><br>
+    <h1></h1>
+    <h3>Task C: Explore and query tables</h3>
+    <ol>
+      <li>
+        <p>To list all the tables names from the sakila database, use the command below in the terminal:</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">pgsql</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-pgsql"><span class="hljs-keyword">SHOW</span> <span class="hljs-keyword">FULL</span> <span class="hljs-keyword">TABLES</span> <span class="hljs-keyword">WHERE</span> table_type = <span class="hljs-string">'BASE TABLE'</span>;
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./mysql-1_files/C.1.png" alt="image">
+        </p>
+        <p>The <strong>Table_type</strong> for these tables is <strong>BASE TABLE</strong>. <strong>BASE TABLE</strong> means that it is a table as opposed to a view (<strong>VIEW</strong>) or an <code>INFORMATION_SCHEMA</code> view (<strong>SYSTEM VIEW</strong>).</p>
+      </li>
+    </ol><br>
+    <ol start="2">
+      <li>
+        <p>Explore the structure of the <strong>staff</strong> table using the command below in the terminal:</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">abnf</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-abnf">DESCRIBE staff<span class="hljs-comment">;</span>
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./mysql-1_files/C.2.png" alt="image">
+        </p>
+        <p>To understand the output, see the following table:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Column Name</th>
+              <th>Definition</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Field</td>
+              <td>Name of the column.</td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Data type of the column.</td>
+            </tr>
+            <tr>
+              <td>Null</td>
+              <td>Displays <strong>YES</strong> if column can contain NULL values and <strong>NO</strong> if not. Notice how the primary key displays <strong>NO</strong>.</td>
+            </tr>
+            <tr>
+              <td>Key</td>
+              <td>Displays the value <strong>PRI</strong> if the column is a primary key, <strong>UNI</strong> if the column is a unique key, and <strong>MUL</strong> if the column is a non-unique index in which one value can appear multiple times. If there is no value displayed, then the column isn't indexed or it's indexed as a secondary column. Please note, that if more than one of these values applies to the column, the value that appears will be displayed based on the following order: <strong>PRI</strong>, <strong>UNI</strong>, and <strong>MUL</strong>.</td>
+            </tr>
+            <tr>
+              <td>Default</td>
+              <td>The default value of the column. If the column's value has specifically been set as NULL, then the value that appears will be NULL.</td>
+            </tr>
+            <tr>
+              <td>Extra</td>
+              <td>Any additional information about a column.</td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+    </ol><br>
+    <ol start="3">
+      <li>
+        <p>Now retrieve all the records from the <strong>staff</strong> table using the command below in the terminal:</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">n1ql</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-n1ql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> staff;
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./mysql-1_files/C.3.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="4">
+      <li>
+        <p>Quit the MySQL command prompt session using the command below in the terminal and proceed to Task D:</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">css</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-css">\<span class="hljs-selector-tag"><span class="hljs-selector-tag">q</span></span>
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./mysql-1_files/C.4.png" alt="image">
+        </p>
+      </li>
+    </ol>
+    <h1></h1>
+    <h3>Task D: Dump/backup tables from a database</h3>
+    <ol>
+      <li>
+        <p>Finally, dump/backup the <strong>staff</strong> table from the database using the command below in the terminal:</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">routeros</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-routeros">mysqldump <span class="hljs-attribute">--host</span>=127.0.0.1 <span class="hljs-attribute">--port</span>=3306 <span class="hljs-attribute">--user</span>=root --password sakila staff &gt; sakila_staff_mysql_dump.sql
+</code></pre>
+        <p></p>
+        <p>This command will backup the <strong>staff</strong> table from the <strong>sakila</strong> database into a file called <strong>sakila_staff_mysql_dump.sql</strong>.</p>
+      </li>
+      <li>
+        <p>Enter your MySQL service session password.</p>
+        <p>
+          <img src="./mysql-1_files/D.2.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="3">
+      <li>
+        <p>To view the contents of the dump file within the terminal, use the command below:</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">autohotkey</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-autohotkey">cat sakil<span class="hljs-built_in">a_staff</span>_mysql_dump.sql
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./mysql-1_files/D.3.png" alt="image">
+        </p>
+      </li>
+    </ol>
+    <h1></h1>
+    <h3>Congratulations! You have completed this lab, and you are ready for the next topic.</h3>
+    <h3><br></h3>
+    <h2>Author(s)</h2>
+    <ul>
+      <li><a href="https://www.linkedin.com/in/sandipsahajoy/?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDB0110ENSkillsNetwork24601058-2021-01-01" target="_blank" rel="external">Sandip Saha Joy</a></li>
+    </ul>
+    <h2>Other Contributor(s)</h2>
+    <ul>
+      <li>Kathy An</li>
+    </ul>
+    <h2>Changelog</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Version</th>
+          <th>Changed by</th>
+          <th>Change Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2021-03-15</td>
+          <td>1.0</td>
+          <td>Sandip Saha Joy</td>
+          <td>Created initial version</td>
+        </tr>
+        <tr>
+          <td>2021-10-18</td>
+          <td>1.1</td>
+          <td>Kathy An</td>
+          <td>Updated lab instructions</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2></h2>
+    <h3 align="center">© IBM Corporation 2021. All rights reserved.</h3>
+    <h3></h3>
+    <script>window.addEventListener('load', function() {
+snFaculty.inject();
+});</script>
+    <script src="./mysql-1_files/inject.43989f87.js.download"></script>
+    <script src="./mysql-1_files/highlight.min.js.download"></script>
+    <script src="./mysql-1_files/highlightjs-badge.min.js.download"></script>
+  
+
+<style>
+@media print {
+   .code-badge { display: none; }
+}
+    .code-badge-pre {
+        position: relative;
+    }
+    .code-badge {
+        display: flex;
+        flex-direction: row;
+        white-space: normal;
+        background: transparent;
+        background: #333;
+        color: white;
+        font-size: 0.875em;
+        opacity: 0.5;
+        transition: opacity linear 0.5s;
+        border-radius: 0 0 0 7px;
+        padding: 5px 8px 5px 8px;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .code-badge.active {
+        opacity: 0.8;
+    }
+
+    .code-badge:hover {
+        opacity: .95;
+    }
+
+    .code-badge a,
+    .code-badge a:hover {
+        text-decoration: none;
+    }
+
+    .code-badge-language {
+        margin-right: 10px;
+        font-weight: 600;
+        color: goldenrod;
+    }
+    .code-badge-copy-icon {
+        font-size: 1.2em;
+        cursor: pointer;
+        padding: 0 7px;
+        margin-top:2;
+    }
+    .fa.text-success:{ color: limegreen !important }
+</style><div id="CodeBadgeTemplate" style="display:none">
+    <div class="code-badge">
+        <div class="code-badge-language">{{language}}</div>
+        <div title="Copy to clipboard">
+            <i class="{{copyIconClass}} code-badge-copy-icon"></i>
+        </div>
+     </div>
+</div></body></html>
