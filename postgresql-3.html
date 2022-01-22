@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<!-- saved from url=(0159)https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0110EN-SkillsNetwork/labs/Lab%20-%20Views%20in%20PostgreSQL/instructional-labs.md.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./postgresql-3_files/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="./postgresql-3_files/default.min.css">
+  <style type="text/css">/* this file is used for labs on cognitiveclass.ai that were written in markdown */
+
+/* applies to images, i.e. "![]()" in markdown */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* add padding and margins */
+body {
+  padding: 10px;
+  margin: 10px;
+}
+
+/* applies to tables, i.e. "|--|--|" in markdown */
+table td,
+table th {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+/* applies to using quotes, i.e. ">" in markdown */
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 1em 10px 0.1em 10px;
+  quotes: '\201C''\201D''\2018''\2019';
+}
+
+/* the headers need some spacing */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 500;
+  padding-top: 20px;
+}
+
+/* Add padding between nested list item */
+ul > li > ul {
+  padding-bottom: 1rem;
+}
+
+.code-badge-language {
+  display: none;
+}
+.code-badge-copy-icon {
+  background: url('data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSIgZGF0YS1wcmVmaXg9ImZhciIgZGF0YS1pY29uPSJjb3B5IiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtY29weSBmYS13LTE0IiByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDQ0OCA1MTIiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQzMy45NDEgNjUuOTQxbC01MS44ODItNTEuODgyQTQ4IDQ4IDAgMCAwIDM0OC4xMTggMEgxNzZjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2NDhINDhjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2MzIwYzAgMjYuNTEgMjEuNDkgNDggNDggNDhoMjI0YzI2LjUxIDAgNDgtMjEuNDkgNDgtNDh2LTQ4aDgwYzI2LjUxIDAgNDgtMjEuNDkgNDgtNDhWOTkuODgyYTQ4IDQ4IDAgMCAwLTE0LjA1OS0zMy45NDF6TTI2NiA0NjRINTRhNiA2IDAgMCAxLTYtNlYxNTBhNiA2IDAgMCAxIDYtNmg3NHYyMjRjMCAyNi41MSAyMS40OSA0OCA0OCA0OGg5NnY0MmE2IDYgMCAwIDEtNiA2em0xMjgtOTZIMTgyYTYgNiAwIDAgMS02LTZWNTRhNiA2IDAgMCAxIDYtNmgxMDZ2ODhjMCAxMy4yNTUgMTAuNzQ1IDI0IDI0IDI0aDg4djIwMmE2IDYgMCAwIDEtNiA2em02LTI1NmgtNjRWNDhoOS42MzJjMS41OTEgMCAzLjExNy42MzIgNC4yNDMgMS43NTdsNDguMzY4IDQ4LjM2OGE2IDYgMCAwIDEgMS43NTcgNC4yNDNWMTEyeiI+PC9wYXRoPjwvc3ZnPg==');
+  background-size: 100% 100%;
+}
+
+.code-badge {
+  bottom: 0 !important;
+  top: unset !important;
+  background: unset !important;
+}
+
+.code-badge > .code-badge-check-icon {
+  background: green;
+}
+.code-badge-check-icon {
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0 7px;
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGFyaWEtaGlkZGVuPSJ0cnVlIiBmb2N1c2FibGU9ImZhbHNlIiBkYXRhLXByZWZpeD0iZmFzIiBkYXRhLWljb249ImNoZWNrIiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtY2hlY2sgZmEtdy0xNiIgcm9sZT0iaW1nIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgc3R5bGU9IiYjMTA7ICAgIGNvbG9yOiAjMmFmZjMyOyYjMTA7Ij48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xNzMuODk4IDQzOS40MDRsLTE2Ni40LTE2Ni40Yy05Ljk5Ny05Ljk5Ny05Ljk5Ny0yNi4yMDYgMC0zNi4yMDRsMzYuMjAzLTM2LjIwNGM5Ljk5Ny05Ljk5OCAyNi4yMDctOS45OTggMzYuMjA0IDBMMTkyIDMxMi42OSA0MzIuMDk1IDcyLjU5NmM5Ljk5Ny05Ljk5NyAyNi4yMDctOS45OTcgMzYuMjA0IDBsMzYuMjAzIDM2LjIwNGM5Ljk5NyA5Ljk5NyA5Ljk5NyAyNi4yMDYgMCAzNi4yMDRsLTI5NC40IDI5NC40MDFjLTkuOTk4IDkuOTk3LTI2LjIwNyA5Ljk5Ny0zNi4yMDQtLjAwMXoiLz48L3N2Zz4=');
+  background-size: 100% 100%;
+}
+</style></head>
+  <body>
+    <img src="./postgresql-3_files/IDSNlogo.png" width="200" height="200">
+    <h1>Hands-on Lab : Views in PostgreSQL</h1>
+    <p><strong>Estimated time needed:</strong> 15 minutes</p>
+    <p>In this lab, you will learn how to create and execute views and materialized views in the PostgreSQL database service using the pgAdmin graphical user interface (GUI) tool. Materialized views behave differently compared to regular views. In materialized views, the result set is materialized, or saved for future use. You can't insert, update, or delete rows like in regular views. Essentially, materialized views store the results of a database query as a separate table-like object so that the query results can be accessed at a later time without having to re-run the query. As a result, materialized views can improve database performance compared to regular views.</p>
+    <h1>Software Used in this Lab</h1>
+    <p>In this lab, you will use the <a href="https://www.postgresql.org/?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDB0110ENSkillsNetwork24601058-2021-01-01">PostgreSQL Database</a>. PostgreSQL is a Relational Database Management System (RDBMS) designed to efficiently store, manipulate, and retrieve the data.</p>
+    <img src="./postgresql-3_files/postgresql.png" width="130" height="100">
+    <p></p>
+    <p>To complete this lab you will utilize the PostgreSQL relational database service available as part of IBM Skills Network Labs (SN Labs) Cloud IDE. SN Labs is a virtual lab environment used in this course.</p>
+    <h1>Database Used in this Lab</h1>
+    <p>The eBooks database has been used in this lab.</p>
+    <p>The following ERD diagram shows the schema of the complete eBooks database used in this lab:</p>
+    <img src="./postgresql-3_files/eBooks_schema_complete.png" width="630" height="500">
+    <h1>Objectives</h1>
+    <p>After completing this lab, you will be able to use pgAdmin with PostgreSQL to:</p>
+    <ul>
+      <li>Restore a database schema and data.</li>
+      <li>Create and execute a view.</li>
+      <li>Create and execute a materialized view.</li>
+    </ul>
+    <h2>Lab Structure</h2>
+    <p>In this exercise, you will go through three tasks where you will learn how to create and execute views and materialized views in the PostgreSQL database service using the pgAdmin graphical user interface (GUI) tool.</p>
+    <h1>Task A: Restore a database schema and data</h1>
+    <p>To get started with this lab, you will first download the relevant <strong>eBooks</strong> database dump file, then launch PostgreSQL and pgAdmin using the Cloud IDE. You can do this by following these steps:</p>
+    <ol>
+      <li>
+        <p>Download the <strong>eBooks</strong> PostgreSQL dump file (containing the eBooks database schema and data) below to your local computer storage.</p>
+        <ul>
+          <li><a href="https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0110EN-SkillsNetwork/datasets/eBooks/eBooks_pgsql_dump.tar" target="_blank" rel="external">eBooks_pgsql_dump.tar</a></li>
+        </ul>
+      </li>
+    </ol><br>
+    <ol start="2">
+      <li>Click on the Skills Network extension button on the left side of the window.</li>
+    </ol><br>
+    <ol start="3">
+      <li>Open the "DATABASES" drop down menu and click on "PostgreSQL"</li>
+    </ol><br>
+    <ol start="4">
+      <li>
+        <p>Click on the "Start" button. PostgreSQL may take a few moments to start.</p>
+        <p>
+          <img src="./postgresql-3_files/SC_1.png" alt="SC_1">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="5">
+      <li>
+        <p>Next, open the pgAdmin Graphical User Interface by clicking the "pgAdmin" button in the Cloud IDE interface.</p>
+        <p>
+          <img src="./postgresql-3_files/pgAdmin_1.png" alt="pgAdmin_1">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="6">
+      <li>
+        <p>Once the pgAdmin GUI opens, click on the <code>Servers</code> tab on the left side of the page. You will be prompted to enter a password.</p>
+        <p>
+          <img src="./postgresql-3_files/pgAdmin_2.png" alt="pgAdmin_2">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="7">
+      <li>To retrieve your password, click on the "PostgreSQL" tab near the top of the interface.</li>
+    </ol><br>
+    <ol start="8">
+      <li>
+        <p>Click on the Copy icon to the left of your password to copy the session password onto your clipboard.</p>
+        <p>
+          <img src="./postgresql-3_files/pgAdmin_3.png" alt="pgAdmin_3">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="9">
+      <li>Navigate back to the "pgAdmin" tab and paste in your password, then click <code>OK</code></li>
+    </ol><br>
+    <ol start="10">
+      <li>
+        <p>You will then be able to access the pgAdmin GUI tool.</p>
+        <p>
+          <img src="./postgresql-3_files/1.5.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="11">
+      <li>
+        <p>In the tree-view, expand <strong>Servers</strong> &gt; <strong>postgres</strong> &gt; <strong>Databases</strong>. Enter your PostgreSQL service session password if prompted during the process. Right-click on <strong>Databases</strong> and go to <strong>Create &gt; Database</strong>. Type <strong>eBooks</strong> as name of the database and click <strong>Save</strong>.</p>
+        <p>
+          <img src="./postgresql-3_files/1.6.1.png" alt="image">
+        </p>
+        <p></p>
+        <p>
+          <img src="./postgresql-3_files/1.6.2.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="12">
+      <li>
+        <p>In the tree-view, expand <strong>eBooks</strong>. Right-click on <strong>eBooks</strong> and select <strong>Restore</strong>.</p>
+        <p>
+          <img src="./postgresql-3_files/1.7.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="13">
+      <li>
+        <p>Follow the instructions below to restore and proceed to Task B:</p>
+        <ul>
+          <li>
+            <p>On the <strong>General</strong> tab, click on the <strong>Select file</strong> button by the Filename box.</p>
+            <p>
+              <img src="./postgresql-3_files/1.8.1.png" alt="image">
+            </p>
+          </li>
+          <li>
+            <p>Click the <strong>Upload File</strong> button.</p>
+            <p>
+              <img src="./postgresql-3_files/1.8.2.png" alt="image">
+            </p>
+          </li>
+          <li>
+            <p>Double-click on the drop files area and load the <strong>eBooks_pgsql_dump.tar</strong> you downloaded earlier from your local computer storage.</p>
+            <p>
+              <img src="./postgresql-3_files/1.8.3.png" alt="image">
+            </p>
+          </li>
+          <li>
+            <p>When the upload is complete, close the drop files area by clicking the <strong>X</strong> button.</p>
+            <p>
+              <img src="./postgresql-3_files/1.8.4.png" alt="image">
+            </p>
+          </li>
+          <li>
+            <p>Make sure Format is set to <strong>All Files</strong>, select the uploaded <strong>eBooks_pgsql_dump.tar</strong> file from the list, and then click the <strong>Select</strong> button.</p>
+            <p>
+              <img src="./postgresql-3_files/1.8.5.png" alt="image">
+            </p>
+          </li>
+          <li>
+            <p>Now switch to <strong>Restore options</strong> tab.</p>
+            <p>
+              <img src="./postgresql-3_files/1.8.6.png" alt="image">
+            </p>
+          </li>
+          <li>
+            <p>Under Disable, set the Trigger option to <strong>Yes</strong>. Then click <strong>Restore</strong> button.</p>
+            <p>
+              <img src="./postgresql-3_files/1.8.7.png" alt="image">
+            </p>
+          </li>
+        </ul>
+      </li>
+    </ol><br>
+    <h1>Task B: Create and execute a view</h1>
+    <ol>
+      <li>
+        <p>In the tree-view, expand <strong>eBooks &gt; Schemas &gt; public</strong>. Right-click on <strong>Views</strong> and go to <strong>Create &gt; View</strong>.</p>
+        <p>
+          <img src="./postgresql-3_files/2.1.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="2">
+      <li>
+        <p>On the <strong>General</strong> tab, type <strong>publisher_and_rating_view</strong> as name of the view. Then switch to <strong>Code</strong> tab.</p>
+        <p>
+          <img src="./postgresql-3_files/2.2.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="3">
+      <li>
+        <p>On the <strong>Code</strong> tab, copy and paste the code below. Then click <strong>Save</strong>.</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">n1ql</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-n1ql"><span class="hljs-keyword">SELECT</span> books.<span class="hljs-built_in">title</span>, books.rating, publishers.name 
+<span class="hljs-keyword">FROM</span> books <span class="hljs-keyword">INNER</span> <span class="hljs-keyword">JOIN</span> publishers <span class="hljs-keyword">ON</span> books.publisher_id = publishers.publisher_id
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./postgresql-3_files/2.3.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="4">
+      <li>
+        <p>In the tree-view, expand <strong>Views</strong>. Right-click on <strong>publisher_and_rating_view</strong> and go to <strong>View/Edit Data &gt; All Rows</strong>.</p>
+        <p>
+          <img src="./postgresql-3_files/2.4.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="5">
+      <li>
+        <p>You will access the view you created. This allows you to actually access and view the contents of tables in your database.</p>
+        <p>
+          <img src="./postgresql-3_files/2.5.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <h1>Task C: Create and execute a materialized view</h1>
+    <ol>
+      <li>
+        <p>In the tree-view, expand <strong>eBooks &gt; Schemas &gt; public</strong>. Right-click on <strong>Materialized Views</strong> and go to <strong>Create &gt; Materialized View</strong>.</p>
+        <p>
+          <img src="./postgresql-3_files/3.1.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="2">
+      <li>
+        <p>On the <strong>General</strong> tab, type <strong>publisher_and_rating_materialized_view</strong> as name of the view. Then switch to the <strong>Definition</strong> tab.</p>
+        <p>
+          <img src="./postgresql-3_files/3.2.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="3">
+      <li>
+        <p>On the <strong>Definition</strong> tab, copy and paste the code below. Then click <strong>Save</strong>.</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">n1ql</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-n1ql"><span class="hljs-keyword">SELECT</span> books.<span class="hljs-built_in">title</span>, books.rating, publishers.name 
+<span class="hljs-keyword">FROM</span> books <span class="hljs-keyword">INNER</span> <span class="hljs-keyword">JOIN</span> publishers <span class="hljs-keyword">ON</span> books.publisher_id = publishers.publisher_id
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./postgresql-3_files/3.3.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="4">
+      <li>
+        <p>In the tree-view, expand <strong>Materialized Views</strong>. Right-click on <strong>publisher_and_rating_materialized_view</strong> and go to <strong>Refresh View &gt; With data</strong>.</p>
+        <p>
+          <img src="./postgresql-3_files/3.4.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="5">
+      <li>
+        <p>Right-click on <strong>publisher_and_rating_materialized_view</strong> again and go to <strong>View/Edit Data &gt; All Rows</strong>.</p>
+        <p>
+          <img src="./postgresql-3_files/3.5.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="6">
+      <li>
+        <p>You will access the materialized view you created.</p>
+        <p>
+          <img src="./postgresql-3_files/3.6.png" alt="image">
+        </p>
+        <p>As you can see, at first glance it doesn't look too different from the regular view you created earlier in this lab - indeed, from the user perspective it's essentially the same: you see the results of a query displayed in a table-like format. The difference is that this materialized view is cached in the database so that the data can be accessed again at a future time without having to re-run the database query, which can be intensive on the server depending on the complexity of the query and the size of the table being queried.</p>
+      </li>
+    </ol><br>
+    <h1></h1>
+    <h3>Congratulations! You have completed this lab, and you are ready for the next topic.</h3>
+    <h3><br></h3>
+    <h2>Author</h2>
+    <ul>
+      <li><a href="https://www.linkedin.com/in/sandipsahajoy/?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDB0110ENSkillsNetwork24601058-2021-01-01" target="_blank" rel="external">Sandip Saha Joy</a></li>
+    </ul>
+    <h2>Other Contributors</h2>
+    <ul>
+      <li><a href="https://www.linkedin.com/in/david-pasternak-6b84a2208/?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDB0110ENSkillsNetwork24601058-2021-01-01" target="_blank" rel="external">David Pasternak</a></li>
+    </ul>
+    <h2>Changelog</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Version</th>
+          <th>Changed by</th>
+          <th>Change Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2021-03-25</td>
+          <td>1.0</td>
+          <td>Sandip Saha Joy</td>
+          <td>Created initial version</td>
+        </tr>
+        <tr>
+          <td>2021-10-18</td>
+          <td>1.1</td>
+          <td>David Pasternak</td>
+          <td>Updated instructions</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2></h2>
+    <h3 align="center">© IBM Corporation 2021. All rights reserved.</h3>
+    <h3></h3>
+    <script>window.addEventListener('load', function() {
+snFaculty.inject();
+});</script>
+    <script src="./postgresql-3_files/inject.43989f87.js.download"></script>
+    <script src="./postgresql-3_files/highlight.min.js.download"></script>
+    <script src="./postgresql-3_files/highlightjs-badge.min.js.download"></script>
+  
+
+<style>
+@media print {
+   .code-badge { display: none; }
+}
+    .code-badge-pre {
+        position: relative;
+    }
+    .code-badge {
+        display: flex;
+        flex-direction: row;
+        white-space: normal;
+        background: transparent;
+        background: #333;
+        color: white;
+        font-size: 0.875em;
+        opacity: 0.5;
+        transition: opacity linear 0.5s;
+        border-radius: 0 0 0 7px;
+        padding: 5px 8px 5px 8px;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .code-badge.active {
+        opacity: 0.8;
+    }
+
+    .code-badge:hover {
+        opacity: .95;
+    }
+
+    .code-badge a,
+    .code-badge a:hover {
+        text-decoration: none;
+    }
+
+    .code-badge-language {
+        margin-right: 10px;
+        font-weight: 600;
+        color: goldenrod;
+    }
+    .code-badge-copy-icon {
+        font-size: 1.2em;
+        cursor: pointer;
+        padding: 0 7px;
+        margin-top:2;
+    }
+    .fa.text-success:{ color: limegreen !important }
+</style><div id="CodeBadgeTemplate" style="display:none">
+    <div class="code-badge">
+        <div class="code-badge-language">{{language}}</div>
+        <div title="Copy to clipboard">
+            <i class="{{copyIconClass}} code-badge-copy-icon"></i>
+        </div>
+     </div>
+</div></body></html>
