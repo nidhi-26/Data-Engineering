@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<!-- saved from url=(0173)https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0110EN-SkillsNetwork/labs/Lab%20-%20Keys%20and%20Constraints%20in%20MySQL/instructional-labs.md.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./myqsl-3_files/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="./myqsl-3_files/default.min.css">
+  <style type="text/css">/* this file is used for labs on cognitiveclass.ai that were written in markdown */
+
+/* applies to images, i.e. "![]()" in markdown */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* add padding and margins */
+body {
+  padding: 10px;
+  margin: 10px;
+}
+
+/* applies to tables, i.e. "|--|--|" in markdown */
+table td,
+table th {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+/* applies to using quotes, i.e. ">" in markdown */
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 1em 10px 0.1em 10px;
+  quotes: '\201C''\201D''\2018''\2019';
+}
+
+/* the headers need some spacing */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 500;
+  padding-top: 20px;
+}
+
+/* Add padding between nested list item */
+ul > li > ul {
+  padding-bottom: 1rem;
+}
+
+.code-badge-language {
+  display: none;
+}
+.code-badge-copy-icon {
+  background: url('data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSIgZGF0YS1wcmVmaXg9ImZhciIgZGF0YS1pY29uPSJjb3B5IiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtY29weSBmYS13LTE0IiByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDQ0OCA1MTIiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTQzMy45NDEgNjUuOTQxbC01MS44ODItNTEuODgyQTQ4IDQ4IDAgMCAwIDM0OC4xMTggMEgxNzZjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2NDhINDhjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2MzIwYzAgMjYuNTEgMjEuNDkgNDggNDggNDhoMjI0YzI2LjUxIDAgNDgtMjEuNDkgNDgtNDh2LTQ4aDgwYzI2LjUxIDAgNDgtMjEuNDkgNDgtNDhWOTkuODgyYTQ4IDQ4IDAgMCAwLTE0LjA1OS0zMy45NDF6TTI2NiA0NjRINTRhNiA2IDAgMCAxLTYtNlYxNTBhNiA2IDAgMCAxIDYtNmg3NHYyMjRjMCAyNi41MSAyMS40OSA0OCA0OCA0OGg5NnY0MmE2IDYgMCAwIDEtNiA2em0xMjgtOTZIMTgyYTYgNiAwIDAgMS02LTZWNTRhNiA2IDAgMCAxIDYtNmgxMDZ2ODhjMCAxMy4yNTUgMTAuNzQ1IDI0IDI0IDI0aDg4djIwMmE2IDYgMCAwIDEtNiA2em02LTI1NmgtNjRWNDhoOS42MzJjMS41OTEgMCAzLjExNy42MzIgNC4yNDMgMS43NTdsNDguMzY4IDQ4LjM2OGE2IDYgMCAwIDEgMS43NTcgNC4yNDNWMTEyeiI+PC9wYXRoPjwvc3ZnPg==');
+  background-size: 100% 100%;
+}
+
+.code-badge {
+  bottom: 0 !important;
+  top: unset !important;
+  background: unset !important;
+}
+
+.code-badge > .code-badge-check-icon {
+  background: green;
+}
+.code-badge-check-icon {
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0 7px;
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGFyaWEtaGlkZGVuPSJ0cnVlIiBmb2N1c2FibGU9ImZhbHNlIiBkYXRhLXByZWZpeD0iZmFzIiBkYXRhLWljb249ImNoZWNrIiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtY2hlY2sgZmEtdy0xNiIgcm9sZT0iaW1nIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgc3R5bGU9IiYjMTA7ICAgIGNvbG9yOiAjMmFmZjMyOyYjMTA7Ij48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xNzMuODk4IDQzOS40MDRsLTE2Ni40LTE2Ni40Yy05Ljk5Ny05Ljk5Ny05Ljk5Ny0yNi4yMDYgMC0zNi4yMDRsMzYuMjAzLTM2LjIwNGM5Ljk5Ny05Ljk5OCAyNi4yMDctOS45OTggMzYuMjA0IDBMMTkyIDMxMi42OSA0MzIuMDk1IDcyLjU5NmM5Ljk5Ny05Ljk5NyAyNi4yMDctOS45OTcgMzYuMjA0IDBsMzYuMjAzIDM2LjIwNGM5Ljk5NyA5Ljk5NyA5Ljk5NyAyNi4yMDYgMCAzNi4yMDRsLTI5NC40IDI5NC40MDFjLTkuOTk4IDkuOTk3LTI2LjIwNyA5Ljk5Ny0zNi4yMDQtLjAwMXoiLz48L3N2Zz4=');
+  background-size: 100% 100%;
+}
+</style></head>
+  <body>
+    <img src="./myqsl-3_files/IDSNlogo.png" width="200" height="200">
+    <h1>Hands-on Lab : Keys and Constraints in MySQL</h1>
+    <p><strong>Estimated time needed:</strong> 20 minutes</p>
+    <p>In this lab, you will learn how to add keys to create relationships between the tables and how to use constraints to enforce rules on the data entry in the MySQL database service using the phpMyAdmin graphical user interface (GUI) tool.</p>
+    <h1></h1>
+    <h2>Software Used in this Lab</h2>
+    <p>In this lab, you will use <a href="https://www.mysql.com/?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDB0110ENSkillsNetwork24601058-2021-01-01">MySQL</a>. MySQL is a Relational Database Management System (RDBMS), designed to efficiently store, manipulate, and retrieve data.</p>
+    <img src="./myqsl-3_files/mysql.png" width="100" height="100">
+    <p></p>
+    <p>To complete this lab you will utilize MySQL relational database service available as part of IBM Skills Network Labs (SN Labs) Cloud IDE. SN Labs is a virtual lab environment used in this course.</p>
+    <h1></h1>
+    <h2>Database Used in this Lab</h2>
+    <p>The eBooks database has been used in this lab.</p>
+    <p>The following entity relationship diagram (ERD) shows the current status of the schema of the eBooks database used in this lab:</p>
+    <img src="./myqsl-3_files/eBooks_schema_mysql_incomplete.png" width="630" height="500">
+    <h1></h1>
+    <h2>Objectives</h2>
+    <p>After completing this lab, you will be able to use MySQL phpMyAdmin to:</p>
+    <ul>
+      <li>Create primary and foreign keys.</li>
+      <li>Add constraints to data columns.</li>
+    </ul>
+    <h1></h1>
+    <h2>Exercise</h2>
+    <p>In this exercise, you will learn how to add keys to create relationships between the tables and how to use constraints to enforce rules on the data entry in the MySQL database service using the phpMyAdmin graphical user interface (GUI) tool.</p>
+    <ol>
+      <li>
+        <p>To start, download the the <strong>eBooks</strong> mysql dump file (containing the eBooks database table definitions and data) below to your local computer storage. A dump file is a text file that contains the data from a database in the form of SQL statements. This file can then be imported in phpMyAdmin.</p>
+        <ul>
+          <li><a href="https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0110EN-SkillsNetwork/datasets/eBooks/eBooks_mysql_dump.sql" target="_blank" rel="external">eBooks_mysql_dump.sql</a></li>
+        </ul>
+      </li>
+    </ol><br>
+    <ol start="2">
+      <li>
+        <p>Go to <strong>Terminal &gt; New Terminal</strong> to open a terminal from the side by side launched Cloud IDE.</p>
+        <p>
+          <img src="./myqsl-3_files/2.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="3">
+      <li>
+        <p>Start the MySQL service session in the Cloud IDE using the command below in the terminal. Find your MySQL service session password from the highlighted location of the terminal shown in the image below. Note down your MySQL service session password because you may need to use it later in the lab.</p>
+        <pre class="code-badge-pre"><div class="code-badge">
+        <div class="code-badge-language">ebnf</div>
+        <div title="Copy to clipboard">
+            <i class="code-badge-copy-icon code-badge-copy-icon"></i>
+        </div>
+     </div><code class="hljs language-ebnf"><span class="hljs-attribute">start_mysql</span>
+</code></pre>
+        <p></p>
+        <p>
+          <img src="./myqsl-3_files/3.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="4">
+      <li>
+        <p>Copy your phpMyAdmin weblink from the highlighted location of the terminal shown in the image below and paste it to a new tab of your web browser.</p>
+        <p>
+          <img src="./myqsl-3_files/4.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="5">
+      <li>
+        <p>You will see the phpMyAdmin GUI tool.</p>
+        <p>
+          <img src="./myqsl-3_files/5.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="6">
+      <li>
+        <p>Go to the <strong>Import</strong> tab. Click <strong>Choose File</strong> and load the <strong>eBooks_mysql_dump.sql</strong> file you downloaded earlier to your local computer storage. Next, uncheck <strong>Enable foreign key checks</strong> and select SQL as <strong>Format</strong>. Then click <strong>Go</strong>.</p>
+        <p>
+          <img src="./myqsl-3_files/6.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="7">
+      <li>
+        <p>You will be notified that the import has successfully finished. Click the database <strong>eBooks</strong> as shown below to expand (if necessary click the <strong>+</strong> icon beside <strong>eBooks</strong>). You will see the list of tables from the eBooks database.</p>
+        <p>
+          <img src="./myqsl-3_files/7.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="8">
+      <li>
+        <p><strong>Primary Keys</strong>: A primary key is a column or group of columns that uniquely identify every row in a table. They constrain the table by only accepting unique, non-NULL values for that column. Non-NULL data is data where the values exist.</p>
+        <p>Creating a primary key on a table automatically creates an index on the key. You will create a primary key for the <strong>author</strong> table to uniquely identify every row in the table. You will set the <strong>author_id</strong> column of the <strong>author</strong> table as a primary key.</p>
+        <ul>
+          <li>In the tree-view, click the <strong>authors</strong> table. Switch to the <strong>Structure</strong> tab and make sure you are inside <strong>Table structure</strong> subtab.</li>
+          <li>Check the <strong>author_id</strong> column.</li>
+          <li>Click the <strong>Primary</strong> option.</li>
+        </ul>
+        <p></p>
+        <p>
+          <img src="./myqsl-3_files/8.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="9">
+      <li>
+        <p><strong>Auto-increment</strong>: Auto-increment enables a unique number to be generated automatically when a new record is inserted into a table. Often this is used for the primary key field to be created automatically every time a new record is inserted. You will set the auto-increment feature for the primary key of the <strong>author</strong> table.</p>
+        <ul>
+          <li>In the tree-view, click the <strong>authors</strong> table. Switch to the <strong>Structure</strong> tab and make sure you are inside the <strong>Table structure</strong> subtab.</li>
+          <li>Check the <strong>author_id</strong> column.</li>
+          <li>Click the <strong>Change</strong> option.</li>
+          <li>Check <strong>A_I</strong> option (A_I = Auto_Increment).</li>
+          <li>Click <strong>Save</strong>.</li>
+        </ul>
+        <p></p>
+        <p>
+          <img src="./myqsl-3_files/9.1.png" alt="image">
+        </p>
+        <p></p>
+        <p>
+          <img src="./myqsl-3_files/9.2.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="10">
+      <li>
+        <p><strong>Null constraints</strong>: By default, a column can hold NULL values. If you do not want a column to have a NULL value, you can restrict the column from having a NULL value. You will restrict the <strong>first_name</strong> column of the <strong>authors</strong> table from having a NULL value.</p>
+        <ul>
+          <li>In the tree-view, click the <strong>authors</strong> table. Switch to the <strong>Structure</strong> tab and make sure you are inside the <strong>Table structure</strong> subtab.</li>
+          <li>Check the <strong>first_name</strong> column.</li>
+          <li>Click the <strong>Change</strong> option.</li>
+          <li>Uncheck the <strong>Null</strong> option.</li>
+          <li>Click <strong>Save</strong>.</li>
+        </ul>
+        <p></p>
+        <p>
+          <img src="./myqsl-3_files/10.1.png" alt="image">
+        </p>
+        <p></p>
+        <p>
+          <img src="./myqsl-3_files/10.2.png" alt="image">
+        </p>
+      </li>
+    </ol><br>
+    <ol start="11">
+      <li>
+        <p><strong>Foreign keys</strong>: A foreign key is a column that establishes a relationship between two tables. It acts as a cross-reference between two tables as it points to the primary key of one table (the parent table), constraining the data in another table (the child table) by the data in the parent table. You will create a foreign key for the <strong>book_authors</strong> table by setting its <strong>author_id</strong> column as a foreign key, to establish a relationship between the <strong>book_authors</strong> and <strong>authors</strong> tables.</p>
+        <ul>
+          <li>In the tree-view, click the <strong>book_authors</strong> table. Switch to the <strong>Structure</strong> tab and make sure you are inside the <strong>Relation view</strong> subtab.</li>
+          <li>If necessary, click <strong>Add constraint</strong> to create a new foreign key constraint placeholder.</li>
+          <li>Fill the placeholders as shown in a image below.</li>
+          <li>Click <strong>Save</strong>.</li>
+        </ul>
+        <p></p>
+        <p>
+          <img src="./myqsl-3_files/11.1.png" alt="image">
+        </p>
+        <p></p>
+        <p>
+          <img src="./myqsl-3_files/11.2.png" alt="image">
+        </p>
+        <p></p>
+        <p>
+          <img src="./myqsl-3_files/11.3.png" alt="image">
+        </p>
+        <p><strong>CASCADE</strong> means that when rows are deleted or updated in the parent table, the corresponding rows in the child table will also be deleted or updated.</p>
+        <p><strong>RESTRICT</strong> means that rows cannot be deleted or updated in the parent table if there are corresponding rows in the child table.</p>
+      </li>
+    </ol><br>
+    <ol start="12">
+      <li>
+        <p>After creating/adding all the above necessary primary keys, foreign keys, and constraints, the schema of the complete eBooks database will look like the following ERD diagram:</p>
+        <ul>
+          <li>
+            <p><strong>Note:</strong> You don't need to generate any ERD diagram like below for this lab. By comparing the earlier eBooks schema ERD (shown in the section "Database Used in this Lab") and this complete eBooks schema ERD, just try to understand how all the operations you did above made the eBooks database complete.</p>
+            <p></p>
+          </li>
+        </ul>
+        <img src="./myqsl-3_files/eBooks_schema_complete.png" width="630" height="500">
+      </li>
+    </ol>
+    <h1></h1>
+    <h3>Congratulations! You have completed this lab, and you are ready for the next topic.</h3>
+    <h3><br></h3>
+    <h2>Author(s)</h2>
+    <ul>
+      <li><a href="https://www.linkedin.com/in/sandipsahajoy/?utm_medium=Exinfluencer&amp;utm_source=Exinfluencer&amp;utm_content=000026UJ&amp;utm_term=10006555&amp;utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDB0110ENSkillsNetwork24601058-2021-01-01" target="_blank" rel="external">Sandip Saha Joy</a></li>
+    </ul>
+    <h2>Other Contributor(s)</h2>
+    <ul>
+      <li>Kathy An</li>
+    </ul>
+    <h2>Changelog</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Version</th>
+          <th>Changed by</th>
+          <th>Change Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2021-03-22</td>
+          <td>1.0</td>
+          <td>Sandip Saha Joy</td>
+          <td>Created initial version</td>
+        </tr>
+        <tr>
+          <td>2021-10-18</td>
+          <td>1.1</td>
+          <td>Kathy An</td>
+          <td>Updated lab instructions</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2></h2>
+    <h3 align="center">© IBM Corporation 2021. All rights reserved.</h3>
+    <h3></h3>
+    <script>window.addEventListener('load', function() {
+snFaculty.inject();
+});</script>
+    <script src="./myqsl-3_files/inject.43989f87.js.download"></script>
+    <script src="./myqsl-3_files/highlight.min.js.download"></script>
+    <script src="./myqsl-3_files/highlightjs-badge.min.js.download"></script>
+  
+
+<style>
+@media print {
+   .code-badge { display: none; }
+}
+    .code-badge-pre {
+        position: relative;
+    }
+    .code-badge {
+        display: flex;
+        flex-direction: row;
+        white-space: normal;
+        background: transparent;
+        background: #333;
+        color: white;
+        font-size: 0.875em;
+        opacity: 0.5;
+        transition: opacity linear 0.5s;
+        border-radius: 0 0 0 7px;
+        padding: 5px 8px 5px 8px;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .code-badge.active {
+        opacity: 0.8;
+    }
+
+    .code-badge:hover {
+        opacity: .95;
+    }
+
+    .code-badge a,
+    .code-badge a:hover {
+        text-decoration: none;
+    }
+
+    .code-badge-language {
+        margin-right: 10px;
+        font-weight: 600;
+        color: goldenrod;
+    }
+    .code-badge-copy-icon {
+        font-size: 1.2em;
+        cursor: pointer;
+        padding: 0 7px;
+        margin-top:2;
+    }
+    .fa.text-success:{ color: limegreen !important }
+</style><div id="CodeBadgeTemplate" style="display:none">
+    <div class="code-badge">
+        <div class="code-badge-language">{{language}}</div>
+        <div title="Copy to clipboard">
+            <i class="{{copyIconClass}} code-badge-copy-icon"></i>
+        </div>
+     </div>
+</div></body></html>
